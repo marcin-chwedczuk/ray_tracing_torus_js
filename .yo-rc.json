@@ -1,0 +1,9 @@
+{
+  "generator-threejs": {
+    "coffeescript": false
+  },
+  "generator-mocha": {
+    "ui": "bdd",
+    "rjs": false
+  }
+}
