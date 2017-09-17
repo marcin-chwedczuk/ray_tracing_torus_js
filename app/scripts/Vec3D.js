@@ -19,11 +19,31 @@ export default class Vec3D {
       this.z / length);
   }
 
+  dot(vec) {
+    let tmp = this.x*vec.x +
+      this.y*vec.y +
+      this.z*vec.z;
+
+    return tmp;
+  }
+
   scale(scalar) {
     return new Vec3D(
       this.x*scalar,
       this.y*scalar,
       this.z*scalar);
+  }
+
+  plus(vec) {
+    return new Vec3D(
+      this.x + vec.x,
+      this.y + vec.y,
+      this.z + vec.z);
+  }
+
+  reverse() {
+    return new Vec3D(
+      -this.x, -this.y, -this.z);
   }
 
   toString() {
