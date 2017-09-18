@@ -2,6 +2,7 @@
 import Point3D from 'Point3D';
 import Vec3D from 'Vec3D';
 import { solve4 } from 'solver';
+import Transformation3D from 'Transformation3D';
 
 const K_EPSILON = 0.0001
 
@@ -13,20 +14,23 @@ export default class Torus {
     constructor(sweptRadius, tubeRadius = 1.0) {
         this.sweptRadius = sweptRadius;
         this.tubeRadius = tubeRadius;
+        this.transformation = new Transformation3D();
     }
 
     hit(ray) {
-        let t = this.findIntersection(ray);
+        let tfRay = this.transformation.transformRay(ray);
 
+        let t = this.findIntersection(tfRay);
         if (t === null)
             return null;
 
-        let hitPoint = ray.pointAtDistance(t);
+        let localHitPoint = tfRay.pointAtDistance(t);
+        let localNormal = this.computeNormalAtPoint(localHitPoint);
 
         return {
             tmin: t,
-            localHitPoint: hitPoint,
-            normalAtHitPoint: this.computeNormalAtPoint(hitPoint)
+            hitPoint: ray.pointAtDistance(t),
+            normal: this.transformation.transformNormal(localNormal)
         };
     }
 

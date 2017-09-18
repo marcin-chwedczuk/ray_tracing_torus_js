@@ -1,5 +1,4 @@
 
-import solve4 from 'solver';
 import Ray from 'Ray';
 import Torus from 'Torus';
 import Vec3D from 'Vec3D';
@@ -9,7 +8,7 @@ import DirectionalLight from 'DirectionalLight';
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 640;
-const PIXEL_SIZE = 1;
+const PIXEL_SIZE = 2;
 
 const VIEWPORT_PIXEL_WIDTH = CANVAS_WIDTH / PIXEL_SIZE;
 const VIEWPORT_PIXEL_HEIGHT = CANVAS_HEIGHT / PIXEL_SIZE;
@@ -25,28 +24,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("renderButton").addEventListener("click", () => {
     let torus = new Torus(1.0, 0.2);
-    let light = new DirectionalLight(new Vec3D(-1,-1,-1), Color.white());
+
+    /*torus.transformation.
+      rotateZ(30).
+      rotateY(10);*/
+
+    let light = new DirectionalLight(new Vec3D(0,0,-1), Color.white());
 
     let viewportWidth = 5.0;
     let viewportHeight = viewportWidth * (VIEWPORT_PIXEL_HEIGHT / VIEWPORT_PIXEL_WIDTH);
 
     for (let row = 0; row < VIEWPORT_PIXEL_HEIGHT; row++) {
       for (let col = 0; col < VIEWPORT_PIXEL_WIDTH; col++) {
-        let direction = new Vec3D(0,-1,0);
+        let direction = new Vec3D(0,0,-1);
         let origin = new Point3D(
           viewportWidth * (((0.5 + col) / VIEWPORT_PIXEL_WIDTH - 0.5)),
-          10.0,
-          viewportHeight * (((0.5 + row) / VIEWPORT_PIXEL_HEIGHT) - 0.5));
+          viewportHeight * (((0.5 + row) / VIEWPORT_PIXEL_HEIGHT) - 0.5),
+          10.0);
 
-        let ray = new Ray(origin, direction);
+        let ray = new Ray(origin, direction.norm());
         let hit = torus.hit(ray);
 
         if (hit === null) {
           putPixel(row, col, 0,0,0);
         }
         else {
-          let color = light.lightPoint(hit.localHitPoint, hit.normalAtHitPoint, ray);
-
+          let color = light.lightPoint(hit.hitPoint, hit.normal, ray);
           putPixel(row, col, color.r, color.g, color.b);
         }
       }

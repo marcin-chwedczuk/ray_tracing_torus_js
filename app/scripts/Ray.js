@@ -4,7 +4,7 @@ import Vec3D from 'Vec3D';
 export default class Ray {
   constructor(origin, direction) {
     this.origin = origin;
-    this.direction = direction.norm();
+    this.direction = direction;
   }
 
   pointAtDistance(t) {
