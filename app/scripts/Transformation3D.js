@@ -1,6 +1,6 @@
 
-import Matrix4, { MATRIX4_IDENTITY } from 'Matrix4';
-import Ray from 'Ray';
+import Matrix4, { MATRIX4_IDENTITY } from "Matrix4";
+import Ray from "Ray";
 
 export default class Transformation3D {
     constructor() {
@@ -37,7 +37,7 @@ export default class Transformation3D {
     }
 
     transformRay(ray) {
-        let tfOrigin = this._invMatrix.transformPoint(ray.origin)
+        let tfOrigin = this._invMatrix.transformPoint(ray.origin);
         let tfDirection = this._invMatrix.transformVector(ray.direction);
         
         return new Ray(tfOrigin, tfDirection);

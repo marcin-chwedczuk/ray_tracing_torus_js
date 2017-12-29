@@ -1,7 +1,7 @@
 
-import Vec3D from 'Vec3D';
-import Point3D from 'Point3D';
-import Color from 'Color';
+import Vec3D from "Vec3D";
+import Point3D from "Point3D";
+import Color from "Color";
 
 export default class DirectionalLight {
     constructor(lightDirection, lightColor = Color.white()) {
@@ -20,7 +20,7 @@ export default class DirectionalLight {
         let incomingDotNormal = this.toLightSourceDirection.dot(normal);
         let reflectedIncomingLightVector =
                 this.toLightSourceDirection.reverse().plus( 
-                    normal.scale(incomingDotNormal * 2.0))
+                    normal.scale(incomingDotNormal * 2.0));
 
         let rDotOutgoing = reflectedIncomingLightVector.dot(ray.direction.reverse().norm());
         

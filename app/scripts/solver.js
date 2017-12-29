@@ -25,7 +25,7 @@
  */
 
 /* epsilon surrounding for near zero values */
-const EQN_EPS = 1e-9
+const EQN_EPS = 1e-9;
 
 function isZero(x) {
     return ((x) > -EQN_EPS && (x) < EQN_EPS);
@@ -76,11 +76,11 @@ export function solve3(c) {
 
     if (isZero(D)) {
         if (isZero(q)) /* one triple solution */ {
-            s = [0]
+            s = [0];
         }
         else /* one single and one double solution */ {
             let u = Math.cbrt(-q);
-            s = [2 * u, -u]
+            s = [2 * u, -u];
         }
     }
     else if (D < 0) /* Casus irreducibilis: three real solutions */ {
@@ -88,8 +88,8 @@ export function solve3(c) {
         let t = 2 * Math.sqrt(-p);
 
         s = [t * Math.cos(phi),
-        -t * Math.cos(phi + Math.PI / 3),
-        -t * Math.cos(phi - Math.PI / 3)];
+            -t * Math.cos(phi + Math.PI / 3),
+            -t * Math.cos(phi - Math.PI / 3)];
 
     }
     else /* one real solution */ {
@@ -183,7 +183,7 @@ export function solve4(c) {
         s = solve2(coeffs);
 
         coeffs = [z + u,
-        q < 0 ? v : -v,
+            q < 0 ? v : -v,
             1];
 
         s = s.concat(solve2(coeffs));

@@ -24,4 +24,8 @@ export default class Color {
     static white() {
         return new Color(1,1,1);
     }
+
+    static black() {
+        return new Color(0,0,0);
+    }
 }

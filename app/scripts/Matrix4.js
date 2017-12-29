@@ -1,14 +1,14 @@
-import Point3D from 'Point3D';
-import Vec3D from 'Vec3D';
+import Point3D from "Point3D";
+import Vec3D from "Vec3D";
 
 export default class Matrix4 {
 
     constructor(elements) {
         if (!Array.isArray(elements))
-            throw new Error('elements must be an array.');
+            throw new Error("elements must be an array.");
 
         if (elements.length !== 16)
-            throw new Error('Expecting array of length 16 but found: ' + elements + '.');
+            throw new Error("Expecting array of length 16 but found: " + elements + ".");
 
         this._m = elements.slice();
     }
@@ -85,10 +85,10 @@ export default class Matrix4 {
         var cos = Math.cos(deg2rad(angleDeg));
 
         return new Matrix4([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, cos, -sin, 0.0,
-                0.0, sin, cos, 0.0,
-                0.0, 0.0, 0.0, 1.0 
+            1.0, 0.0, 0.0, 0.0,
+            0.0, cos, -sin, 0.0,
+            0.0, sin, cos, 0.0,
+            0.0, 0.0, 0.0, 1.0 
         ]);
     }
 
@@ -97,10 +97,10 @@ export default class Matrix4 {
         var cos = Math.cos(deg2rad(angleDeg));
 
         return new Matrix4([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, cos, sin, 0.0,
-                0.0, -sin, cos, 0.0,
-                0.0, 0.0, 0.0, 1.0
+            1.0, 0.0, 0.0, 0.0,
+            0.0, cos, sin, 0.0,
+            0.0, -sin, cos, 0.0,
+            0.0, 0.0, 0.0, 1.0
         ]);
     }
 
@@ -109,10 +109,10 @@ export default class Matrix4 {
         var cos = Math.cos(deg2rad(angleDeg));
 
         return new Matrix4([
-                cos, 0.0, sin, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                -sin, 0.0, cos, 0.0,
-                0.0, 0.0, 0.0, 1.0
+            cos, 0.0, sin, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            -sin, 0.0, cos, 0.0,
+            0.0, 0.0, 0.0, 1.0
         ]);
     }
 
@@ -121,10 +121,10 @@ export default class Matrix4 {
         var cos = Math.cos(deg2rad(angleDeg));
 
         return new Matrix4([
-                cos, 0.0, -sin, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                sin, 0.0, cos, 0.0,
-                0.0, 0.0, 0.0, 1.0
+            cos, 0.0, -sin, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            sin, 0.0, cos, 0.0,
+            0.0, 0.0, 0.0, 1.0
         ]);
     }
 
@@ -133,10 +133,10 @@ export default class Matrix4 {
         var cos = Math.cos(deg2rad(angleDeg));
 
         return new Matrix4([
-                cos, -sin, 0.0, 0.0,
-                sin, cos, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
+            cos, -sin, 0.0, 0.0,
+            sin, cos, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
         ]);
     }
 
