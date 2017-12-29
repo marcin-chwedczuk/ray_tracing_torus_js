@@ -38,6 +38,18 @@ export default class Matrix4 {
         return new Matrix4(copy);
     }
 
+    transpose() {
+        var transpose = Array(16);
+
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+                transpose[col*4 + row] = this.get(row, col);
+            }
+        }
+
+        return new Matrix4(transpose);
+    }
+
     transformPoint(point) {
         return new Point3D(
             this.get(0,0)*point.x + this.get(0,1)*point.y + this.get(0,2)*point.z + this.get(0,3),

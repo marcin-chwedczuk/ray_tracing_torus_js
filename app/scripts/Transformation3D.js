@@ -36,6 +36,11 @@ export default class Transformation3D {
         return this;
     }
 
+    affine(matrix, matrixInverse) {
+        this._matrix = matrix.times( this._matrix );
+        this._invMatrix = this._invMatrix.times( matrixInverse );
+    }
+
     transformRay(ray) {
         let tfOrigin = this._invMatrix.transformPoint(ray.origin);
         let tfDirection = this._invMatrix.transformVector(ray.direction);
