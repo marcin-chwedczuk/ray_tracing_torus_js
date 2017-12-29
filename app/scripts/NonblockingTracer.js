@@ -7,17 +7,12 @@ import World from "World";
 const TIMER_DELAY_MILLISECONDS = 0;
 
 export default class NonblockingTracer {
-    constructor({
-        viewportWidth, viewportHeight,
-        horizontalResolution, verticalResolution,
-        workSizePerIteration
-    }) {
-        this.viewportWidth = viewportWidth;
-        this.viewportHeight = viewportHeight;
-
-        this.horizontalResolution = horizontalResolution || 640;
-        this.verticalResolution = verticalResolution || 800;
-        this.workSizePerIteration = workSizePerIteration || this.verticalResolution;
+    constructor(
+        viewport,
+        workSizePerIteration = viewport.verticalResolution)
+    {
+        this.viewport = viewport;
+        this.workSizePerIteration = workSizePerIteration;
 
         this.onPixelRenderedHandler = function() { };
 
@@ -45,7 +40,7 @@ export default class NonblockingTracer {
             throw new Error("Rendering is already in progress.");
         }
 
-        this.pixelCoordsGenerator = this._generateViewportPixelCoords();
+        this.pixelCoordsGenerator = this.viewport.generateAllRowColIndicies();
 
         this.intervalId = setInterval(
             () => {
@@ -80,10 +75,7 @@ export default class NonblockingTracer {
         //console.log(`renderPixel ${row} ${col}`);
 
         let direction = new Vec3D(0,0,-1);
-        let origin = new Point3D(
-            this.viewportWidth  * ((0.5 + col) / this.horizontalResolution),
-            this.viewportHeight * ((0.5 + row) / this.verticalResolution),
-            10.0);
+        let origin = this.viewport.calculatePixelCenter(row, col);
 
         let ray = new Ray(origin, direction.norm());
         let hit = world.hit(ray);
@@ -97,13 +89,7 @@ export default class NonblockingTracer {
         }
     }
 
-    *_generateViewportPixelCoords() {
-        for (let row = 0; row < this.verticalResolution; row++) {
-            for (let col = 0; col < this.horizontalResolution; col++) {
-                yield { row, col };
-            }
-        }
-    }
+
 
 
 }

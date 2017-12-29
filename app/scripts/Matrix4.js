@@ -5,7 +5,7 @@ export default class Matrix4 {
 
     constructor(elements) {
         if (!Array.isArray(elements))
-            throw new Error("elements must be an array.");
+            throw new Error("Invalid argument: 'elements' must be an array.");
 
         if (elements.length !== 16)
             throw new Error("Expecting array of length 16 but found: " + elements + ".");

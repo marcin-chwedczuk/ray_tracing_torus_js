@@ -7,6 +7,7 @@ import Color from "Color";
 import DirectionalLight from "DirectionalLight";
 import World from "World";
 import NonblockingTracer from "NonblockingTracer";
+import Viewport from "Viewport";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 640;
@@ -30,17 +31,22 @@ document.addEventListener("DOMContentLoaded", () => {
         torus.transformation.
             rotateX(-16).
             rotateY(0);
-
         let light = new DirectionalLight(new Vec3D(0,0,-1), Color.white());
+
         let world = new World(torus, light);
+        
+        const VIEWPORT_WIDTH = 5.0;
+        let viewport = new Viewport({
+            viewportWidth: VIEWPORT_WIDTH,
+            viewportHeight: VIEWPORT_WIDTH * (VIEWPORT_PIXEL_HEIGHT / VIEWPORT_PIXEL_WIDTH),
+            
+            zAxisOffset: 10,
 
-        let viewportWidth = 5.0;
-        let viewportHeight = viewportWidth * (VIEWPORT_PIXEL_HEIGHT / VIEWPORT_PIXEL_WIDTH);
-
-        let tracer = new NonblockingTracer({
-            viewportWidth, viewportHeight,
-            horizontalResolution: 0, verticalResolution: 0
+            horizontalResolution: CANVAS_WIDTH,
+            verticalResolution: CANVAS_HEIGHT
         });
+
+        let tracer = new NonblockingTracer(viewport);
 
         tracer.onPixelRendered((row, col, color) => {
             putPixel(row, col, color.r, color.g, color.b);
