@@ -6,13 +6,14 @@ import Point3D from "Point3D";
 import Color from "Color";
 import DirectionalLight from "DirectionalLight";
 import World from "World";
-import NonblockingTracer from "NonblockingTracer";
 import Viewport from "Viewport";
 import RollBall from "RollBall";
+import Tracer from "Tracer";
+import NonBlockingExecutor from "NonBlockingExecutor";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 640;
-const PIXEL_SIZE = 8;
+const PIXEL_SIZE = 16;
 
 const VIEWPORT_PIXEL_WIDTH = CANVAS_WIDTH / PIXEL_SIZE;
 const VIEWPORT_PIXEL_HEIGHT = CANVAS_HEIGHT / PIXEL_SIZE;
@@ -25,33 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
                   blowUp("cannot find HTML element with id 'canvas'.");
     const ctx = canvas.getContext("2d");
 
-    let torus = new Torus(1.0, 0.2);
-    torus.transformation.
-        rotateX(-16).
-        rotateY(0);
-    let light = new DirectionalLight(new Vec3D(0,0,-1), Color.white());
-
-    let world = new World(torus, light);
+    let world = createWorld();
+    let tracer = createTracer(world, PIXEL_SIZE);
 
     let lastMouseOffset = null;
     let rollBall = new RollBall(200.0);
 
-    const VIEWPORT_WIDTH = 5.0;
-    let viewport = new Viewport({
-        viewportWidth: VIEWPORT_WIDTH,
-        viewportHeight: VIEWPORT_WIDTH * (VIEWPORT_PIXEL_HEIGHT / VIEWPORT_PIXEL_WIDTH),
-        
-        zAxisOffset: 10,
+    let executor = new NonBlockingExecutor(
+        () => tracer.createPixelsGenerator(),
+        pixel => { 
+            let color = tracer.rayTracePixel(pixel);
+            return { color, row: pixel.row, col: pixel.col };
+        });
 
-        horizontalResolution: VIEWPORT_PIXEL_WIDTH,
-        verticalResolution: VIEWPORT_PIXEL_HEIGHT
-    });
+    executor.setDataProcessedCallback(
+        p => putPixel(p.row, p.col, p.color.r, p.color.g, p.color.b));
 
-    let tracer = new NonblockingTracer(viewport);
-
-    tracer.onPixelRendered((row, col, color) => {
-        putPixel(row, col, color.r, color.g, color.b);
-    });
 
     canvas.addEventListener("mousedown", (e) => {
         let x = e.offsetX, y = e.offsetY;
@@ -71,23 +61,51 @@ document.addEventListener("DOMContentLoaded", () => {
         // We use transpose to invert rotation matrix
         let inverse = rotationMatrix.transpose();
 
-        tracer.stopRendering();
+        executor.cancel();
+        
+        world.object
+            .transformation
+            .affine(rotationMatrix, inverse);
 
-        torus.transformation.affine(rotationMatrix, inverse);
-        tracer.startRendering(world);
+        executor.start();
     });
 
     console.log("canvas setup finished...");
 
     document.getElementById("renderButton").addEventListener("click", () => {
-
-        
-
-
-        tracer.startRendering(world);
-
-
+        executor.start();
     });
+
+    function createTracer(world, pixelSize) {
+        const VIEWPORT_PIXEL_WIDTH = CANVAS_WIDTH / pixelSize;
+        const VIEWPORT_PIXEL_HEIGHT = CANVAS_HEIGHT / pixelSize;
+        
+        const VIEWPORT_WIDTH = 5.0;
+
+        let viewport = new Viewport({
+            viewportWidth: VIEWPORT_WIDTH,
+            viewportHeight: VIEWPORT_WIDTH * (CANVAS_HEIGHT/CANVAS_WIDTH),
+            
+            zAxisOffset: 10,
+    
+            horizontalResolution: VIEWPORT_PIXEL_WIDTH,
+            verticalResolution: VIEWPORT_PIXEL_HEIGHT
+        });
+    
+        let tracer = new Tracer(viewport, world);
+        return tracer;
+    }
+
+    function createWorld() {
+        let torus = new Torus(1.0, 0.2);
+        torus.transformation.
+            rotateX(-16).
+            rotateY(0);
+
+        let light = new DirectionalLight(new Vec3D(0,0,-1), Color.white());
+    
+        return new World(torus, light);
+    }
 
     function putPixel(row, col, r, g, b) {
         ctx.save();

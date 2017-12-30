@@ -28,7 +28,7 @@ export default class Viewport {
         }
     }
 
-    calculatePixelCenter(row, col) {
+    calculatePixelCenter({ row, col }) {
         // Viewport is centered around (0,0,0) point.
         // Last '-0.5' is used to subtract half of the viewport width/height.
         let x = this.viewportWidth  * ( ((0.5+col)/this.horizontalResolution) - 0.5 );

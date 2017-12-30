@@ -16,3 +16,18 @@ export function checkPositiveNumber(value, parameterName) {
 
     return value;
 }
+
+export function checkDefined(value, parameterName) {
+    if (value == null)
+        throw new Error(`Missing value for ${parameterName} parameter.`);
+
+    return value;
+}
+
+export function checkFunction(value, parameterName) {
+    if (!(value instanceof Function)) {
+        throw new Error(`Invalid argument: ${parameterName} must be a function.`);
+    }
+
+    return value;
+}
