@@ -6,7 +6,7 @@ export default class NonBlockingExecutor {
         tasksProducer, 
         taskProcessor,
         sleepBetweenTaskBatchesMiliseconds = 0,
-        taskBatchSize = 100) 
+        taskBatchSize = 400) 
     {
         this._taskProducer = checkFunction(tasksProducer, "tasksProducer");
         this._taskProcessor = checkFunction(taskProcessor, "taskProcessor");
@@ -38,7 +38,7 @@ export default class NonBlockingExecutor {
     cancel() {
         if (this.isStarted()) {
             clearInterval(this._intervalId);
-            
+
             this._intervalId = null;
             this._tasks = null;
         }

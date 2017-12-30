@@ -28,4 +28,8 @@ export default class Color {
     static black() {
         return new Color(0,0,0);
     }
+
+    static rgb(r, g, b) {
+        return new Color(r,g,b);
+    }
 }

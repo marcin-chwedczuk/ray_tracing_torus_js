@@ -27,20 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
 
     let world = createWorld();
-    let tracer = createTracer(world, PIXEL_SIZE);
+    let progressiveTracers = [16,8,4,2,1]
+        .map(pixelSize => createTracer(world, pixelSize));
 
     let lastMouseOffset = null;
     let rollBall = new RollBall(200.0);
 
     let executor = new NonBlockingExecutor(
-        () => tracer.createPixelsGenerator(),
-        pixel => { 
+        function* () {
+            for (let tracerIndex in progressiveTracers) {
+                let tracer = progressiveTracers[tracerIndex];
+                for (let pixel of tracer.createPixelsGenerator()) {
+                    yield { tracerIndex, pixel };
+                }
+            }
+        },
+        pair => { 
+            let tracer = progressiveTracers[pair.tracerIndex];
+            let pixel = pair.pixel;
+
             let color = tracer.rayTracePixel(pixel);
-            return { color, row: pixel.row, col: pixel.col };
+            return { color, row: pixel.row, col: pixel.col, pixelSize: tracer.pixelSize };
         });
 
     executor.setDataProcessedCallback(
-        p => putPixel(p.row, p.col, p.color.r, p.color.g, p.color.b));
+        p => putPixel(p.pixelSize, p.row, p.col, p.color.r, p.color.g, p.color.b));
 
 
     canvas.addEventListener("mousedown", (e) => {
@@ -93,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     
         let tracer = new Tracer(viewport, world);
+        tracer.pixelSize = pixelSize; // UGLY HACK
         return tracer;
     }
 
@@ -102,15 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
             rotateX(-16).
             rotateY(0);
 
-        let light = new DirectionalLight(new Vec3D(0,0,-1), Color.white());
+        let light = new DirectionalLight(new Vec3D(-0.5,0,-1), Color.white());
     
         return new World(torus, light);
     }
 
-    function putPixel(row, col, r, g, b) {
+    function putPixel(pixelSize, row, col, r, g, b) {
         ctx.save();
         ctx.fillStyle = `rgb(${colorByte(r)},${colorByte(g)},${colorByte(b)})`;
-        ctx.fillRect(col*PIXEL_SIZE, row*PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+        ctx.fillRect(col*pixelSize, row*pixelSize, pixelSize, pixelSize);
         ctx.restore();
 
         function colorByte(v) {
