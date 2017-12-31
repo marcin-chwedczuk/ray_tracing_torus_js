@@ -8,6 +8,7 @@ export default class Viewport {
         viewportHeight,
         zAxisOffset,
 
+        pixelSize,
         horizontalResolution = 800, 
         verticalResolution = 640
     }) 
@@ -16,6 +17,7 @@ export default class Viewport {
         this.viewportHeight = checkPositiveNumber(viewportHeight, "viewportHeight");
         this.zAxisOffset = checkNumber(zAxisOffset, "zAxisOffset");
 
+        this.pixelSize = checkPositiveNumber(pixelSize, "pixelSize");
         this.horizontalResolution = checkPositiveNumber(horizontalResolution, "horizontalResolution");
         this.verticalResolution = checkPositiveNumber(verticalResolution, "verticalResolution");
     }

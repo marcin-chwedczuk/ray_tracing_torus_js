@@ -8,33 +8,37 @@ import NonBlockingExecutor from "NonBlockingExecutor";
 export default class RayTracer {
 
     constructor(screenWidth, screenHeight) {
-        this._world = World.build();
+        this._pixelRenderedCallback = () => { };
 
-        let progressiveTracers = [16,8,4,2,1]
-            .map(pixelSize => this._createTracer(this._world, screenWidth, screenWidth, pixelSize));
-    
         this._lastMouseOffset = null;
         this._rollBall = new RollBall(200.0);
-        this._pixelRenderedCallback = () => { };
-    
+        
+        this._world = World.build();
+
+        let progressiveViewports = 
+            this._createProgressiveViewports(screenWidth, screenHeight);
+        
+        let self = this;
         this._executor = new NonBlockingExecutor(
             function* () {
-                for (let tracerIndex in progressiveTracers) {
-                    let tracer = progressiveTracers[tracerIndex];
-                    for (let pixel of tracer.createPixelsGenerator()) {
-                        yield { tracerIndex, pixel };
+                for (let viewport of progressiveViewports) {
+                    //self._executor._taskBatchSize = viewport.horizontalResolution;
+
+                    let tracer = new Tracer(viewport, self._world);
+                    let pixelSize = viewport.pixelSize;
+
+                    // TODO: pixelsIterator() -> position + pixelSize
+                    for (let pixelPosition of tracer.createPixelsGenerator()) {
+                        yield { tracer, pixelPosition, pixelSize };
                     }
                 }
             },
-            pair => { 
-                let tracer = progressiveTracers[pair.tracerIndex];
-                let pixel = pair.pixel;
-    
-                let color = tracer.rayTracePixel(pixel);
-                return { color, row: pixel.row, col: pixel.col, pixelSize: tracer.pixelSize };
+            ({ tracer, pixelPosition, pixelSize }) => {
+                let color = tracer.rayTracePixel(pixelPosition);
+                return { color, row: pixelPosition.row, col: pixelPosition.col, pixelSize: pixelSize };
             });
 
-            this._executor.setDataProcessedCallback(
+        this._executor.setDataProcessedCallback(
                 p => this._pixelRenderedCallback.call(null, p.pixelSize, p.row, p.col, p.color));
     }
 
@@ -42,7 +46,14 @@ export default class RayTracer {
         this._pixelRenderedCallback = callback;
     }
 
-    _createTracer(world, screenWidth, screenHeight, pixelSize) {
+    _createProgressiveViewports(screenWidth, screenHeight) {
+        const pixelSizes = [16, 8, 4, 2, 1];
+
+        return pixelSizes.map(size => 
+            this._createViewport(screenWidth, screenHeight, size));
+    }
+
+    _createViewport(screenWidth, screenHeight, pixelSize) {
         const horizontalResolution = screenWidth / pixelSize;
         const verticalResolution   = screenHeight / pixelSize;
 
@@ -56,13 +67,12 @@ export default class RayTracer {
             
             zAxisOffset: 10,
     
+            pixelSize,
             horizontalResolution,
             verticalResolution
         });
     
-        let tracer = new Tracer(viewport, world);
-        tracer.pixelSize = pixelSize; // UGLY HACK
-        return tracer;
+        return viewport;
     }
 
     start() {
