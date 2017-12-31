@@ -1,6 +1,6 @@
 
 import Matrix4 from "Matrix4";
-import { checkPositiveNumber } from "utils";
+import { checkPositiveNumber } from "utils/preconditions";
 
 /**
  * Implementation of Rolling-Ball algorithm: 

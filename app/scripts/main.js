@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     executor.setDataProcessedCallback(
-        p => putPixel(p.pixelSize, p.row, p.col, p.color.r, p.color.g, p.color.b));
+        p => putPixel(p.pixelSize, p.row, p.col, p.color));
 
 
     canvas.addEventListener("mousedown", (e) => {
@@ -119,15 +119,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return new World(torus, light);
     }
 
-    function putPixel(pixelSize, row, col, r, g, b) {
+    function putPixel(pixelSize, row, col, color) {
         ctx.save();
-        ctx.fillStyle = `rgb(${colorByte(r)},${colorByte(g)},${colorByte(b)})`;
+        ctx.fillStyle = color.toCssColor();
         ctx.fillRect(col*pixelSize, row*pixelSize, pixelSize, pixelSize);
         ctx.restore();
-
-        function colorByte(v) {
-            return Math.floor(v*255.0);
-        }
     }
 
     function blowUp(message) {

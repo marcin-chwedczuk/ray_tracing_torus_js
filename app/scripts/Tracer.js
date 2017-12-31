@@ -4,7 +4,7 @@ import Point3D from "Point3D";
 import Color from "Color";
 import World from "World";
 import Viewport from "Viewport";
-import { checkDefined } from "utils";
+import { checkDefined } from "utils/preconditions";
 
 export default class Tracer {
     constructor(viewport, world) {

@@ -1,4 +1,4 @@
-import { checkFunction, checkDefined } from "utils";
+import { checkFunction, checkDefined } from "utils/preconditions";
 
 
 export default class NonBlockingExecutor {

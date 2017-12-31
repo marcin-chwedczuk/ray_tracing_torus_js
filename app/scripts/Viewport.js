@@ -1,6 +1,6 @@
 import Point3D from "Point3D";
 
-import { checkNumber, checkPositiveNumber } from "utils";
+import { checkNumber, checkPositiveNumber } from "utils/preconditions";
 
 export default class Viewport {
     constructor({

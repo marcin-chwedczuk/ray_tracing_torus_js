@@ -1,4 +1,8 @@
 
+import { clamp, toInt } from "utils/math";
+
+const MAX_BYTE_VALUE = 255;
+
 export default class Color {
     constructor(r,g,b) {
         this.r = r;
@@ -16,9 +20,24 @@ export default class Color {
 
     clamp() {
         return new Color(
-            Math.max(0.0, Math.min(1.0, this.r)),
-            Math.max(0.0, Math.min(1.0, this.g)),
-            Math.max(0.0, Math.min(1.0, this.b)));
+            clamp(this.r, 0, 1),
+            clamp(this.g, 0, 1),
+            clamp(this.b, 0, 1));
+    }
+
+    map(mapFn) {
+        return new Color(
+            mapFn.call(null, this.r),
+            mapFn.call(null, this.g),
+            mapFn.call(null, this.b));
+    }
+
+    toCssColor() {
+        let rgb = this.clamp()
+            .scale(MAX_BYTE_VALUE)
+            .map(toInt);
+
+        return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
     }
 
     static white() {
