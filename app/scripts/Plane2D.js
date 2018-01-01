@@ -15,13 +15,13 @@ export default class Plane2D {
 
         if (t >= K_EPSILON) {
             let hitPoint = ray.pointAtDistance(t);
-            let color = this._findColor(hitPoint);
+            let objectColor = this._findColor(hitPoint);
 
             return {
                 tmin: t,
                 normal: this.normal,
                 hitPoint,
-                color
+                objectColor
             };
         }
 

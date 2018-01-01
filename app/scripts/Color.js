@@ -25,11 +25,18 @@ export default class Color {
             clamp(this.b, 0, 1));
     }
 
-    add(color) {
+    plus(color) {
         return new Color(
             this.r + color.r,
             this.g + color.g,
             this.b + color.b);
+    }
+
+    multiply(color) {
+        return new Color(
+            this.r * color.r,
+            this.g * color.g,
+            this.b * color.b);
     }
 
     map(mapFn) {

@@ -57,8 +57,8 @@ export default class Tracer {
         let color = Color.black();
         
         for (let light of lights) {
-            let lightContribution = light.lightPoint(hit.hitPoint, hit.normal, ray);
-            color = color.add(lightContribution);
+            let lightContribution = light.lightPoint(hit.normal, ray, hit.objectColor);
+            color = color.plus(lightContribution);
         }
 
         return color.clamp();

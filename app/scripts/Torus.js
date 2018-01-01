@@ -3,6 +3,7 @@ import Point3D from "Point3D";
 import Vec3D from "Vec3D";
 import { solve4 } from "solver";
 import Transformation3D from "Transformation3D";
+import Color from "Color";
 
 const K_EPSILON = 0.0001;
 
@@ -14,7 +15,9 @@ export default class Torus {
     constructor(sweptRadius, tubeRadius = 1.0) {
         this.sweptRadius = sweptRadius;
         this.tubeRadius = tubeRadius;
+        
         this.transformation = new Transformation3D();
+        this.color = Color.white();
     }
 
     hit(ray) {
@@ -30,7 +33,8 @@ export default class Torus {
         return {
             tmin: t,
             hitPoint: ray.pointAtDistance(t),
-            normal: this.transformation.transformNormal(localNormal)
+            normal: this.transformation.transformNormal(localNormal),
+            objectColor: this.color
         };
     }
 

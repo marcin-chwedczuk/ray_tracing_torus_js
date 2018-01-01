@@ -11,26 +11,42 @@ export default class DirectionalLight {
         this.lightColor = lightColor;
     }
 
-    lightPoint(hitPoint, normal, ray) {
-        let contribLambert = normal.dot(this.toLightSourceDirection);
-        if (contribLambert < 0.0) {
-            contribLambert = 0.0;
-        }
+    lightPoint(normal, ray, objectColor) {
+        let diffuse = this._diffuseContribution(normal, objectColor);
+        let specular = this._specularContribution(normal, ray);
         
+        return diffuse.plus(specular);
+    }
+
+    _diffuseContribution(normal, objectColor) {
+        let contrib = normal.dot(this.toLightSourceDirection);
+
+        if (contrib < 0.0) {
+            contrib = 0.0;
+        }
+
+        // Color of diffused light depends on object color
+        return this.lightColor
+            .multiply(objectColor)
+            .scale(contrib);
+    }
+
+    _specularContribution(normal, ray) {
         let incomingDotNormal = this.toLightSourceDirection.dot(normal);
-        let reflectedIncomingLightVector =
-                this.toLightSourceDirection.reverse().plus( 
+
+        let reflected =
+                this.lightDirection.plus( 
                     normal.scale(incomingDotNormal * 2.0));
 
-        let rDotOutgoing = reflectedIncomingLightVector.dot(ray.direction.reverse().norm());
+        let rDotOutgoing = reflected.dot(ray.direction.reverse().norm());
         
         let contribSpecular = 0.0;
         if (rDotOutgoing > 0.0) {
             contribSpecular = Math.pow(rDotOutgoing, 100.0);
         }
 
+        // Specular depends only on light color
         return this.lightColor
-            .scale(contribLambert + contribSpecular)
-            .clamp();
+            .scale(contribSpecular);
     }
 }

@@ -6,6 +6,7 @@ import Plane2D from "Plane2D";
 import Point3D from "Point3D";
 import PerspectiveCamera from "PerspectiveCamera";
 import CameraWindow from "CameraWindow";
+import AmbientLight from "AmbientLight";
 
 export default class World {
     constructor(objects, lights, camera) {
@@ -24,6 +25,7 @@ export default class World {
 
     static build(screenAspectRatio) {
         let torus = new Torus(1.0, 0.4);
+        torus.color = Color.rgb(1.0, 0.0, 0.0);
         torus.transformation.
             rotateX(-16).
             rotateY(0);
@@ -32,13 +34,14 @@ export default class World {
             new Point3D(0,-35.4,0), 
             new Vec3D(0,1,0));
 
+        let ambientLight = new AmbientLight(Color.white(), 0.1);
         let light = new DirectionalLight(
             new Vec3D(0,-1,0), 
-            Color.white());
+            Color.rgb(1,1,0));
 
         let camera = World._createCamera(screenAspectRatio);
 
-        return new World([torus, floor], [light], camera);
+        return new World([torus, floor], [light, ambientLight], camera);
     }
 
     static _createCamera(screenAspectRatio) {
