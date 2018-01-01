@@ -4,38 +4,46 @@ import { checkNumber, checkPositiveNumber } from "utils/preconditions";
 
 export default class Viewport {
     constructor({
-        viewportWidth, 
-        viewportHeight,
-        zAxisOffset,
-
-        pixelSize,
+        screenWidth,
+        screenHeight,
         horizontalResolution = 800, 
-        verticalResolution = 640
-    }) 
+        verticalResolution = 640 }) 
     {
-        this.viewportWidth = checkPositiveNumber(viewportWidth, "viewportWidth");
-        this.viewportHeight = checkPositiveNumber(viewportHeight, "viewportHeight");
-        this.zAxisOffset = checkNumber(zAxisOffset, "zAxisOffset");
+        this._screenWidth = checkPositiveNumber(screenWidth, "screenWidth");
+        this._screenHeight = checkPositiveNumber(screenHeight, "screenHeight");
 
-        this.pixelSize = checkPositiveNumber(pixelSize, "pixelSize");
-        this.horizontalResolution = checkPositiveNumber(horizontalResolution, "horizontalResolution");
-        this.verticalResolution = checkPositiveNumber(verticalResolution, "verticalResolution");
+        this._horizontalResolution = checkPositiveNumber(horizontalResolution, "horizontalResolution");
+        this._verticalResolution = checkPositiveNumber(verticalResolution, "verticalResolution");
+
+        this._screenPixelWidth = this._screenWidth / this._horizontalResolution;
+        this._screenPixelHeight = this._screenHeight / this._verticalResolution;
     }
 
     *generateAllRowColIndicies() {
-        for (let row = 0; row < this.verticalResolution; row++) {
-            for (let col = 0; col < this.horizontalResolution; col++) {
+        for (let row = 0; row < this._verticalResolution; row++) {
+            for (let col = 0; col < this._horizontalResolution; col++) {
                 yield { row, col };
             }
         }
     }
 
-    calculatePixelCenter({ row, col }) {
-        // Viewport is centered around (0,0,0) point.
-        // Last '-0.5' is used to subtract half of the viewport width/height.
-        let x = this.viewportWidth  * ( ((0.5+col)/this.horizontalResolution) - 0.5 );
-        let y = this.viewportHeight * ( ((0.5+row)/this.verticalResolution)   - 0.5 );
+    calculateRayPixelProjection(camera, { row, col }) {
+        let windowPixelWidth = camera.windowWidth / this._horizontalResolution;
+        let windowPixelHeight = camera.windowHeight / this._verticalResolution;
 
-        return new Point3D(x, y, this.zAxisOffset);
+        let xWindowOffset = windowPixelWidth  * (0.5+col);
+        let yWindowOffset = windowPixelHeight * (0.5+row);
+
+        let ray = camera.calculateRayForPointAtWindowOffset(xWindowOffset, yWindowOffset);
+
+        return { 
+            ray, 
+            pixelPosition: {
+                xOffset: (col * this._screenPixelWidth),
+                yOffset: (row * this._screenPixelHeight),
+                width: this._screenPixelWidth, 
+                height: this._screenPixelHeight 
+            }
+        };
     }
 }

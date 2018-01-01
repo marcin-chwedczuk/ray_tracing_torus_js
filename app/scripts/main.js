@@ -26,10 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
         rayTracer.start();
     });
 
-    function putPixel(pixelSize, row, col, color) {
+    function putPixel({ color, pixelPosition }) {
         ctx.save();
         ctx.fillStyle = color.toCssColor();
-        ctx.fillRect(col*pixelSize, row*pixelSize, pixelSize, pixelSize);
+        ctx.fillRect(pixelPosition.xOffset, pixelPosition.yOffset, 
+            pixelPosition.width, pixelPosition.height);
         ctx.restore();
     }
 

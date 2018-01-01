@@ -13,7 +13,8 @@ export default class RayTracer {
         this._lastMouseOffset = null;
         this._rollBall = new RollBall(200.0);
         
-        this._world = World.build();
+        let screenAspectRatio = screenWidth / screenHeight;
+        this._world = World.build(screenAspectRatio);
 
         let progressiveViewports = 
             this._createProgressiveViewports(screenWidth, screenHeight);
@@ -25,21 +26,20 @@ export default class RayTracer {
                     //self._executor._taskBatchSize = viewport.horizontalResolution;
 
                     let tracer = new Tracer(viewport, self._world);
-                    let pixelSize = viewport.pixelSize;
 
                     // TODO: pixelsIterator() -> position + pixelSize
                     for (let pixelPosition of tracer.createPixelsGenerator()) {
-                        yield { tracer, pixelPosition, pixelSize };
+                        yield { tracer, pixelPosition };
                     }
                 }
             },
-            ({ tracer, pixelPosition, pixelSize }) => {
-                let color = tracer.rayTracePixel(pixelPosition);
-                return { color, row: pixelPosition.row, col: pixelPosition.col, pixelSize: pixelSize };
+            ({ tracer, pixelPosition }) => {
+                let screenPixel = tracer.rayTracePixel(pixelPosition);
+                return screenPixel;
             });
 
         this._executor.setDataProcessedCallback(
-                p => this._pixelRenderedCallback.call(null, p.pixelSize, p.row, p.col, p.color));
+                p => this._pixelRenderedCallback.call(null, p));
     }
 
     setPixelRenderedCallback(callback) {
@@ -57,17 +57,9 @@ export default class RayTracer {
         const horizontalResolution = screenWidth / pixelSize;
         const verticalResolution   = screenHeight / pixelSize;
 
-        const screenAspectRatio    = screenWidth / screenHeight;
-        
-        const viewportWidthInWorld = 5.0;
-
         let viewport = new Viewport({
-            viewportWidth: viewportWidthInWorld,
-            viewportHeight: viewportWidthInWorld * (1.0/screenAspectRatio),
-            
-            zAxisOffset: 10,
-    
-            pixelSize,
+            screenWidth,
+            screenHeight,
             horizontalResolution,
             verticalResolution
         });

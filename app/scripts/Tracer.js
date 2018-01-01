@@ -17,17 +17,23 @@ export default class Tracer {
     }
 
     rayTracePixel(pixel) {
-        let origin = this.viewport.calculatePixelCenter(pixel);
-        let direction = new Vec3D(0,0,-1);
+        let projection = 
+            this.viewport.calculateRayPixelProjection(this.world.camera, pixel);
         
-        let ray = new Ray(origin, direction);
+        let pixelColor = null;
 
-        let hit = this.world.hit(ray);
+        let hit = this.world.hit(projection.ray);
         if (hit === null) {
-            return Color.black();
+            pixelColor = Color.black();
+        }
+        else {
+            pixelColor = this.world.shadePoint(hit.hitPoint, hit.normal, projection.ray);
+
+            if (hit.color)
+                pixelColor = hit.color; // HACK
         }
 
-        let color = this.world.shadePoint(hit.hitPoint, hit.normal, ray);
-        return color;
+
+        return { color: pixelColor, pixelPosition: projection.pixelPosition };
     }
 }
