@@ -25,6 +25,13 @@ export default class Color {
             clamp(this.b, 0, 1));
     }
 
+    add(color) {
+        return new Color(
+            this.r + color.r,
+            this.g + color.g,
+            this.b + color.b);
+    }
+
     map(mapFn) {
         return new Color(
             mapFn.call(null, this.r),

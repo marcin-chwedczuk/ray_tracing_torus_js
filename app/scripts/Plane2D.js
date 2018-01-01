@@ -51,21 +51,17 @@ export default class Plane2D {
         // This work only for planes parallel
         // to XZ plane.
 
-        // TODO: Ortorzutowanie & płaszczyzna nie działają -
-        // przestaw się na perspective + klasa na kamerę
-
-        const SIZE = 1;
-        const EPSILON = 1e-12;
-
+        const SIZE = 20;
+        
         let x = (hitPoint.x < 0) ? -hitPoint.x + SIZE : hitPoint.x;
-        let y = (hitPoint.y < 0) ? -hitPoint.y + SIZE : hitPoint.y;
+        let z = (hitPoint.z < 0) ? -hitPoint.z + SIZE : hitPoint.z;
 
         let xEven = (x / SIZE) & 1;
-        let yEven = (y / SIZE) & 1;
+        let zEven = (z / SIZE) & 1;
 
-        return ((xEven) % 2) == 0 
-            ? Color.white() 
-            : Color.rgb(0.5,0.5,0.5);
+        return ((xEven + zEven) & 1)
+            ? Color.black()
+            : Color.rgb(0.6,0.6,0.6);
     }
 
 

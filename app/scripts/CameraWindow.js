@@ -9,7 +9,7 @@ export default class CameraWindow {
         this._zOffset = checkNumber(zOffset, "zOffset");
 
         this._xMin = -this._width/2;
-        this._yMin = -this._height/2;
+        this._yMax =  this._height/2;
     }
 
     get width() { return this._width; }
@@ -17,9 +17,11 @@ export default class CameraWindow {
     get zOffset() { return this._zOffset; }
 
     computePointAtOffset(xOffset, yOffset) {
+        // Offset is computed from top left corner
+        // of the camera window.
         return new Point3D(
             this._xMin + xOffset,
-            this._yMin + yOffset,
+            this._yMax - yOffset,
             this._zOffset);
     }
 

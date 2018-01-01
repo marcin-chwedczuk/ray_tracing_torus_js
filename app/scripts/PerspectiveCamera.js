@@ -14,8 +14,6 @@ export default class PerspectiveCamera {
         let pointOnCameraWindow = 
             this._cameraWindow.computePointAtOffset(xOffset, yOffset);
 
-        return new Ray(pointOnCameraWindow, new Vec3D(0,0,-1));
-
         let rayOrigin = this._eye;
 
         let rayDirection = pointOnCameraWindow

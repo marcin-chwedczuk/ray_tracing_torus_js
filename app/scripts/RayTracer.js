@@ -4,6 +4,7 @@ import Viewport from "Viewport";
 import RollBall from "RollBall";
 import Tracer from "Tracer";
 import NonBlockingExecutor from "NonBlockingExecutor";
+import Torus from "Torus";
 
 export default class RayTracer {
 
@@ -81,17 +82,20 @@ export default class RayTracer {
 
         console.log(`mouseup with delta dx: ${dx}, dy: ${dy}`);
 
-        let rotationMatrix = this._rollBall.computeMatrixFromCursorDelta(dx, dy);
+        // Reflect dy - because we use standard 2D axis (with Y moving to the bottom).
+        let rotationMatrix = this._rollBall.computeMatrixFromCursorDelta(dx, -dy);
 
         // We use transpose to invert rotation matrix
         let inverse = rotationMatrix.transpose();
 
         this._executor.cancel();
         
-        this._world.object
+        this._world.objects
+            .filter(x => x instanceof Torus)[0] // TODO: Move to world
             .transformation
             .affine(rotationMatrix, inverse);
 
         this._executor.start();
     }
+
 }

@@ -8,14 +8,14 @@ import PerspectiveCamera from "PerspectiveCamera";
 import CameraWindow from "CameraWindow";
 
 export default class World {
-    constructor(object, light, camera) {
-        this.object = object;
-        this.light = light;
+    constructor(objects, lights, camera) {
+        this.objects = objects;
+        this.lights = lights;
         this.camera = camera;
     }
 
     hit(ray) {
-        return this.object.hit(ray);
+        return this.objects.hit(ray);
     }
 
     shadePoint(hitPoint, normal, ray) {
@@ -38,17 +38,17 @@ export default class World {
 
         let camera = World._createCamera(screenAspectRatio);
 
-        return new World(torus, light, camera);
+        return new World([torus, floor], [light], camera);
     }
 
     static _createCamera(screenAspectRatio) {
         let cameraWindow = CameraWindow.fromAspectRatio({
             width: 5.0,
             aspectRation: screenAspectRatio,
-            zOffset: 10.0
+            zOffset: 1.0
         });
 
-        let eye = new Point3D(0, 0, 20.0);
+        let eye = new Point3D(0, 0, 10.0);
 
         return new PerspectiveCamera(eye, cameraWindow);
     }
