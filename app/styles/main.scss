@@ -25,7 +25,7 @@ body {
   cursor: -moz-grab;
   cursor: -webkit-grab;
 
-  .during-dragging {
+  &.during-dragging {
     cursor: move;
     cursor: grabbing;
     cursor: -moz-grabbing;
