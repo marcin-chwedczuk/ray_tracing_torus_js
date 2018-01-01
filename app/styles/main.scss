@@ -16,7 +16,21 @@ body {
   padding-top: 20px;
   padding-bottom: 20px;
 
-  background-color: #ddd;
+  background-color: #151515;
+}
+
+.supports-drag {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+
+  .during-dragging {
+    cursor: move;
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+  }
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */

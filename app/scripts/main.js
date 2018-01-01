@@ -4,6 +4,8 @@ import RayTracer from "RayTracer";
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 640;
 
+const DURING_DRAG_CSS_CLASS = "during-dragging";
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("canvas") ||
                   blowUp("cannot find HTML element with id 'canvas'.");
@@ -13,18 +15,24 @@ document.addEventListener("DOMContentLoaded", () => {
     rayTracer.setPixelRenderedCallback(putPixel);
 
     canvas.addEventListener("mousedown", (e) => {
-        let x = e.offsetX, y = e.offsetY;
+        e.target.classList.add(DURING_DRAG_CSS_CLASS);
+
+        let x = e.offsetX;
+        let y = e.offsetY;
         rayTracer.rotationStart(x, y);
     });
 
     canvas.addEventListener("mouseup", (e) => {
-        let x = e.offsetX, y = e.offsetY;
+        e.target.classList.remove(DURING_DRAG_CSS_CLASS)
+
+        let x = e.offsetX;
+        let y = e.offsetY;
         rayTracer.rotationEnd(x, y);
     });
 
-    document.getElementById("renderButton").addEventListener("click", () => {
+    setTimeout(() => {
         rayTracer.start();
-    });
+    }, 50);
 
     function putPixel({ color, pixelPosition }) {
         ctx.save();
