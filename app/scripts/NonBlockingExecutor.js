@@ -5,8 +5,7 @@ export default class NonBlockingExecutor {
     constructor(
         tasksProducer, 
         taskProcessor,
-        sleepBetweenTaskBatchesMiliseconds = 0,
-        taskBatchSize = 400) 
+        sleepBetweenTaskBatchesMiliseconds = 0) 
     {
         this._taskProducer = checkFunction(tasksProducer, "tasksProducer");
         this._taskProcessor = checkFunction(taskProcessor, "taskProcessor");
@@ -16,7 +15,6 @@ export default class NonBlockingExecutor {
         this._tasks = null;
 
         this._sleepBetweenTaskBatchesMiliseconds = sleepBetweenTaskBatchesMiliseconds;
-        this._taskBatchSize = taskBatchSize;
     }
 
     setDataProcessedCallback(callback) {
@@ -31,7 +29,7 @@ export default class NonBlockingExecutor {
         this._tasks = this._taskProducer();
 
         this._intervalId = setInterval(
-            () => this._executeBatch(), 
+            () => this._executeNextTask(), 
             this._sleepBetweenTaskBatchesMiliseconds);
     }
 
@@ -48,17 +46,15 @@ export default class NonBlockingExecutor {
         return (this._intervalId !== null);
     }
 
-    _executeBatch() {
-        for(let i = 0; i < this._taskBatchSize; i++) {
-            let taskOrDone = this._tasks.next();
+    _executeNextTask() {
+        let taskOrDone = this._tasks.next();
 
-            if (taskOrDone.done) {
-                this.cancel();
-                break;
-            }
-
-            let taskResult = this._taskProcessor.call(null, taskOrDone.value);
-            this._callback.call(null, taskResult);
+        if (taskOrDone.done) {
+            this.cancel();
+            return;
         }
+
+        let taskResult = this._taskProcessor.call(null, taskOrDone.value);
+        this._callback.call(null, taskResult);
     }
 }

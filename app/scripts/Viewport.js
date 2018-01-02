@@ -19,11 +19,15 @@ export default class Viewport {
         this._screenPixelHeight = this._screenHeight / this._verticalResolution;
     }
 
-    *generateAllRowColIndicies() {
+    *getDisplayRowsIterator() {
         for (let row = 0; row < this._verticalResolution; row++) {
-            for (let col = 0; col < this._horizontalResolution; col++) {
-                yield { row, col };
-            }
+            yield row;
+        }
+    }
+
+    *getDisplayColumnsIterator() {
+        for (let col = 0; col < this._horizontalResolution; col++) {
+            yield col;
         }
     }
 

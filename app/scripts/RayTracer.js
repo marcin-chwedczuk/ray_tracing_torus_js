@@ -5,11 +5,15 @@ import RollBall from "RollBall";
 import Tracer from "Tracer";
 import NonBlockingExecutor from "NonBlockingExecutor";
 import Torus from "Torus";
+import { checkDefined, checkFunction, checkPositiveNumber } from "utils/preconditions";
 
 export default class RayTracer {
 
     constructor(screenWidth, screenHeight) {
-        this._pixelRenderedCallback = () => { };
+        checkPositiveNumber(screenWidth, "screenWidth");
+        checkPositiveNumber(screenHeight, "screenHeight");
+
+        this._displayRowRenderedCallback = () => { };
 
         this._lastMouseOffset = null;
         this._rollBall = new RollBall(200.0);
@@ -17,41 +21,48 @@ export default class RayTracer {
         let screenAspectRatio = screenWidth / screenHeight;
         this._world = World.build(screenAspectRatio);
 
-        let progressiveViewports = 
-            this._createProgressiveViewports(screenWidth, screenHeight);
-        
-        let self = this;
+        this._progressiveViewports = this._createProgressiveViewports(screenWidth, screenHeight);
+
         this._executor = new NonBlockingExecutor(
-            function* () {
-                for (let viewport of progressiveViewports) {
-                    //self._executor._taskBatchSize = viewport.horizontalResolution;
+            () => this._getDisplayRowsIterator(),
+            ({ tracer, rowToRender }) => this._rayTraceDisplayRow(tracer, rowToRender));
 
-                    let tracer = new Tracer(viewport, self._world);
-
-                    // TODO: pixelsIterator() -> position + pixelSize
-                    for (let pixelPosition of tracer.createPixelsGenerator()) {
-                        yield { tracer, pixelPosition };
-                    }
-                }
-            },
-            ({ tracer, pixelPosition }) => {
-                let screenPixel = tracer.rayTracePixel(pixelPosition);
-                return screenPixel;
-            });
-
-        this._executor.setDataProcessedCallback(
-                p => this._pixelRenderedCallback.call(null, p));
+        this._executor.setDataProcessedCallback(rayTracedPixels => 
+            this._displayRowRenderedCallback.call(null, rayTracedPixels));
     }
 
-    setPixelRenderedCallback(callback) {
-        this._pixelRenderedCallback = callback;
+    setDisplayRowRenderedCallback(callback) {
+        this._displayRowRenderedCallback = checkFunction(callback, "callback");
+    }
+
+    _rayTraceDisplayRow(tracer, rowToRender) {
+        let rayTracedPixels = [];
+
+        for (let col of tracer.getDisplayColumnsIterator()) {
+            let pixelColorAndPosition = 
+                tracer.rayTracePixel({ row: rowToRender, col: col });
+
+            rayTracedPixels.push(pixelColorAndPosition);
+        }
+
+        return rayTracedPixels;
+    }
+
+    *_getDisplayRowsIterator() {
+        for (let viewport of this._progressiveViewports) {
+            let tracer = new Tracer(viewport, this._world);
+
+            for (let row of tracer.getDisplayRowsIterator()) {
+                yield { tracer, rowToRender: row };
+            }
+        }
     }
 
     _createProgressiveViewports(screenWidth, screenHeight) {
-        const pixelSizes = [16, 8, 4, 2, 1];
+        const pixelSizes = [32, 16, 8, 4, 2, 1];
 
-        return pixelSizes.map(size => 
-            this._createViewport(screenWidth, screenHeight, size));
+        return pixelSizes.map(pixelSize => 
+            this._createViewport(screenWidth, screenHeight, pixelSize));
     }
 
     _createViewport(screenWidth, screenHeight, pixelSize) {

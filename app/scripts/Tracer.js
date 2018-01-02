@@ -12,29 +12,29 @@ export default class Tracer {
         this.world = checkDefined(world, "world");
     }
 
-    createPixelsGenerator() {
-        return this.viewport.generateAllRowColIndicies();
+    getDisplayRowsIterator() {
+        return this.viewport.getDisplayRowsIterator();
+    }
+
+    getDisplayColumnsIterator() {
+        return this.viewport.getDisplayColumnsIterator();
     }
 
     rayTracePixel(pixel) {
         let projection = 
             this.viewport.calculateRayPixelProjection(this.world.camera, pixel);
         
-        let pixelColor = null;
-
         let hit = this._hit(this.world.objects, projection.ray);
+
+        let pixelColor = null;
         if (hit === null) {
             pixelColor = Color.black();
         }
         else {
             pixelColor = this._shadePoint(hit, projection.ray, this.world.lights);
-
-            if (hit.color)
-                pixelColor = hit.color; // HACK
         }
 
-
-        return { color: pixelColor, pixelPosition: projection.pixelPosition };
+        return { color: pixelColor, position: projection.pixelPosition };
     }
 
     _hit(objects, ray) {

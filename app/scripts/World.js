@@ -62,14 +62,14 @@ export default class World {
         this._addObject(floor);
     }
 
-    _addLight(light) { this.lights.push(light); }
-    _addObject(object) { this.objects.push(object); }
-
     onUserRequestedRotation(rotationMatrix, inverseRotationMatrix) {
         this._torus
             .transformation
             .affine(rotationMatrix, inverseRotationMatrix);
     }
+
+    _addLight(light) { this.lights.push(light); }
+    _addObject(object) { this.objects.push(object); }
 
     static build(screenAspectRatio) {
         let world = new World();

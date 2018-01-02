@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
 
     const rayTracer = new RayTracer(CANVAS_WIDTH, CANVAS_HEIGHT);
-    rayTracer.setPixelRenderedCallback(putPixel);
+    rayTracer.setDisplayRowRenderedCallback(drawDisplayRow);
 
     canvas.addEventListener("mousedown", (e) => {
         e.target.classList.add(DURING_DRAG_CSS_CLASS);
@@ -34,11 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
         rayTracer.start();
     }, 50);
 
-    function putPixel({ color, pixelPosition }) {
+    function drawDisplayRow(displayRowPixels) {
+        for (let pixel of displayRowPixels) {
+            drawPixel(pixel);
+        }
+    }
+
+    function drawPixel({ color, position }) {
         ctx.save();
         ctx.fillStyle = color.toCssColor();
-        ctx.fillRect(pixelPosition.xOffset, pixelPosition.yOffset, 
-            pixelPosition.width, pixelPosition.height);
+        ctx.fillRect(position.xOffset, position.yOffset, 
+            position.width, position.height);
         ctx.restore();
     }
 
