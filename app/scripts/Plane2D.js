@@ -66,6 +66,4 @@ export default class Plane2D {
             ? this.color1
             : this.color2;
     }
-
-
 }
