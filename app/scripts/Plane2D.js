@@ -8,6 +8,9 @@ export default class Plane2D {
     constructor(pointOnPlane, normal) {
         this.pointOnPlane = checkDefined(pointOnPlane);
         this.normal = checkDefined(normal);
+
+        this.color1 = Color.white();
+        this.color2 = Color.black();
     }
 
     hit(ray) {
@@ -60,8 +63,8 @@ export default class Plane2D {
         let zEven = (z / SIZE) & 1;
 
         return ((xEven + zEven) & 1)
-            ? Color.black()
-            : Color.rgb(0.6,0.6,0.6);
+            ? this.color1
+            : this.color2;
     }
 
 

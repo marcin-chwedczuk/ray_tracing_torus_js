@@ -79,23 +79,16 @@ export default class RayTracer {
     rotationEnd(x, y) {
         let dx = x - this._lastMouseOffset.x;
         let dy = y - this._lastMouseOffset.y;
-
-        console.log(`mouseup with delta dx: ${dx}, dy: ${dy}`);
+        
+        this._executor.cancel();
 
         // Reflect dy - because we use standard 2D axis (with Y moving to the bottom).
         let rotationMatrix = this._rollBall.computeMatrixFromCursorDelta(dx, -dy);
-
-        // We use transpose to invert rotation matrix
+        // We use transpose to inverse rotation matrix
         let inverse = rotationMatrix.transpose();
 
-        this._executor.cancel();
-        
-        this._world.objects
-            .filter(x => x instanceof Torus)[0] // TODO: Move to world
-            .transformation
-            .affine(rotationMatrix, inverse);
+        this._world.onUserRequestedRotation(rotationMatrix, inverse);
 
         this._executor.start();
     }
-
 }

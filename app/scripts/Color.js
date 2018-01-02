@@ -65,4 +65,8 @@ export default class Color {
     static rgb(r, g, b) {
         return new Color(r,g,b);
     }
+
+    static gray(value) {
+        return new Color(value, value, value);
+    }
 }

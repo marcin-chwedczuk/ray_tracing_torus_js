@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     canvas.addEventListener("mouseup", (e) => {
-        e.target.classList.remove(DURING_DRAG_CSS_CLASS)
+        e.target.classList.remove(DURING_DRAG_CSS_CLASS);
 
         let x = e.offsetX;
         let y = e.offsetY;
