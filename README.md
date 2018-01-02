@@ -1,4 +1,4 @@
 
-### Ray tracing Torus in JavaScript
+# Ray tracing Torus in JavaScript
 
-![Animated GIF with demo][demo.gif]
+![Animated GIF with demo](demo.gif)
